@@ -1,0 +1,9 @@
+# This is a sample configuration file that needs to be placed in the general directory on shell systems used by others.
+---
+# Common Database Information
+database:
+  dbHost: dbhost.example.com
+  dbPort: 5432
+  dbName: rtbhdb
+  dbUserName: rtbh_ro
+  dbUserPass: rtbh_ropass
