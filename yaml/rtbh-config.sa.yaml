@@ -1,0 +1,47 @@
+# This is a sample configuration file that needs to be placed in the service account's home directory.
+---
+# Common Database Information
+database:
+  dbHost: dbhost.example.com
+  dbPort: 5432
+  dbName: rtbhdb
+  dbUserName: rtbhuser
+  dbUserPass: rtbhpass
+
+# Listrunner
+listrunner:
+  cache:
+    location: /tmp
+    age: 7000
+  lists:
+    - ident: TORXN
+      descr: TOR Exit Node List
+      url: https://check.torproject.org/torbulkexitlist
+      type: v4_host
+      auto:
+    - ident: V4BOGON
+      descr: Team Cymru IPv4 Bogon List
+      url: https://team-cymru.org/Services/Bogons/fullbogons-ipv4.txt
+      type: v4_host_mask
+      auto:
+    - ident: 3CORESEC
+      descr: 3CoreSec Open Blacklist
+      url: https://blacklist.3coresec.net/lists/et-open.txt
+      type: v4_host
+      auto:
+    - ident: STATIC
+      descr: Interal Static Blocks
+      file: /etc/my-blocklist.txt
+      type: v4_host_mask
+      auto:
+  exclude:
+    exact:
+      - 10.0.0.0/8      # RFC 1918
+      - 100.64.0.0/10   # RFC 6598
+      - 172.16.0.0/12   # RFC 1918
+      - 192.168.0.0/16  # RFC 1918
+      - 224.0.0.0/4     # Multicast
+    within:
+      - 192.0.2.0/24    # RFC 5737
+      - 198.51.100.0/24 # RFC 5737
+      - 203.0.113.0/24  # RFC 5737
