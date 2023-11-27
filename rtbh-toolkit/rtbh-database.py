@@ -58,6 +58,11 @@ def cli_args():
                                      help='This option will flush the database tables.')
     op_flush.set_defaults(operation='flush')
 
+    # Database Lock Status
+    op_status = sub_parser.add_parser('locks',
+                                      help='Show the locks associated with each process.')
+    op_status.set_defaults(operation='status')
+
     # Database Unlock Process
     op_unlock = sub_parser.add_parser('unlock',
                                       help='This option will unlock and stuck processes.')
@@ -122,6 +127,20 @@ def unlock_process(db_link):
         _logger.error("Could not unlock processes: {}\r".format(error))
 
     db.close()
+
+
+def lock_status(db_link):
+    _logger = logging.getLogger("rtbh-database/lock_status")
+
+    db = db_link.cursor()
+
+    try:
+        db.execute("SELECT processname, status FROM processes ORDER BY status, processname")
+    except Exception as error:
+        _logger.error("Count not get a process list.")
+
+    for row in db:
+        print("{:.<20}: {:10}".format(row[0], row[1]))
 
 
 def create_tables(db_link):
@@ -354,6 +373,9 @@ if __name__ == "__main__":
     elif vars(args)['operation'] == 'init':
         print("Creating all tables...")
         create_tables(db_link)
+    elif vars(args)['operation'] == 'status':
+        print("Current Lock Status...")
+        lock_status(db_link)
     elif vars(args)['operation'] == 'unlock':
         print("Unlocking processes...")
         unlock_process(db_link)
