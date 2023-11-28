@@ -1,0 +1,10 @@
+certifi >= 2020.12.5
+chardet >= 4.0.0
+idna >= 3.3
+iupy >= 0.2.1
+iupy-restconf >= 0.1.0
+psycopg2-binary >= 2.8.6
+PyYAML >= 5.4.1
+requests >= 2.25.1
+tqdm >= 4.66
+urllib3 >= 1.26.4
