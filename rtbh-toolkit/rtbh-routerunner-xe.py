@@ -409,8 +409,8 @@ def route_processor(db_link, entry, blocklist):
                     # Retry.
                     log.debug("Retrying batch ...")
 
-                log.debug("Wait 5 seconds.")
-                time.sleep(5)
+                log.debug("Wait a second.")
+                time.sleep(1)
 
         if logging.root.level != logging.DEBUG:
             progress_bar.update(1)
