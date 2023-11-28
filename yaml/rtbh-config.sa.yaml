@@ -45,3 +45,8 @@ listrunner:
       - 192.0.2.0/24    # RFC 5737
       - 198.51.100.0/24 # RFC 5737
       - 203.0.113.0/24  # RFC 5737
+
+# Query Options
+query:
+  timeZone: America/New_York
+  timeFormat: YYYY-MM-DD HH12:MI:SS AM

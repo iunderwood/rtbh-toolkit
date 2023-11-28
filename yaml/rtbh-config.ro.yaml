@@ -7,3 +7,7 @@ database:
   dbName: rtbhdb
   dbUserName: rtbh_ro
   dbUserPass: rtbh_ropass
+
+query:
+  timeZone: America/New_York
+  timeFormat: YYYY-MM-DD HH12:MI:SS AM
