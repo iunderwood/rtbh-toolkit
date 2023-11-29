@@ -1,3 +1,4 @@
 myst-parser
 Sphinx
 sphinxemoji
+sphinx_rtd_theme
