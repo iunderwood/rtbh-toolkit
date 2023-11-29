@@ -14,5 +14,8 @@
 # Python egg metadata
 /*.egg-info
 
+# ReadTheDocs Local Builds
+/docs/_*
+
 # Module Configs
 rtbh-config.yaml
