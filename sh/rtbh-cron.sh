@@ -2,11 +2,11 @@
 
 # Activate Python VENV
 
-source /usr/local/python/venv/rtbh_toolkit/bin/activate
+source "$RTBH_VENV"/bin/activate
 
 # Change to the code directory
 
-cd /usr/local/python/venv/rtbh_toolkit/src/rtbh-toolkit/rtbh-toolkit/
+cd "$RTBH_VENV"/src/rtbh-toolkit/rtbh-toolkit/
 
 # Cron Header
 echo "RTBH Scheduled Update Process"
