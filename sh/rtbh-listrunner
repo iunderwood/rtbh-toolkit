@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#
+# Last Revision: 2023-12-01
+#
+
+source "$RTBH_VENV"/bin/activate
+python3 "$RTBH_VENV"/src/rtbh-toolkit/rtbh-toolkit/rtbh-listrunner.py "$@"
+deactivate
