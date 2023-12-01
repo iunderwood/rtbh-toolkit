@@ -309,7 +309,8 @@ if __name__ == "__main__":
     if vars(args)['operation'] == 'init':
         # Connect to DB, and enable auto-commit:
         try:
-            db_link = psycopg2.connect(host=dbHost, port=dbPort, user=dbSuperUserName, password=dbSuperUserPass)
+            db_link = psycopg2.connect(host=dbHost, port=dbPort, database="postgres",
+                                       user=dbSuperUserName, password=dbSuperUserPass)
             db_link.autocommit = True
         except Exception as error:
             logger.error("Could not open database as superuser: {}".format(error))
