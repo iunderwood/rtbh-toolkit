@@ -305,7 +305,6 @@ if __name__ == "__main__":
     print("RTBH Database Init")
     print("==================")
 
-    # Create Database by default.
     if vars(args)['operation'] == 'init':
         # Connect to DB, and enable auto-commit:
         try:
@@ -336,6 +335,21 @@ if __name__ == "__main__":
             logger.error("Could not create database: {}".format(error))
             exit(4)
 
+        # Close database
+        db_cursor.close()
+        db_link.close()
+
+    # Create the read-only user under the proper database.
+
+    if vars(args)['operation'] == 'init':
+        try:
+            db_link = psycopg2.connect(host=dbHost, port=dbPort, database=dbName,
+                                       user=dbSuperUserName, password=dbSuperUserPass)
+            db_link.autocommit = True
+        except Exception as error:
+            logger.error("Could not open database as superuser: {}".format(error))
+            exit(2)
+
         # Create the read-only user if we both options.
         try:
             dbReadUser = vars(args)['db_rouser']
@@ -346,6 +360,8 @@ if __name__ == "__main__":
             stepReadUser = False
 
         if stepReadUser:
+            db_cursor = db_link.cursor()
+
             # Create, comment, and grant
             try:
                 db_cursor.execute("CREATE ROLE {} WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '{}'".
@@ -355,6 +371,8 @@ if __name__ == "__main__":
                 print("Created read-only user: {}".format(dbReadUser))
             except Exception as error:
                 logger.error("Non-Fatal: Unable to create read-only user: {}".format(error))
+
+            db_cursor.close()
 
         # Close database
         db_link.close()
