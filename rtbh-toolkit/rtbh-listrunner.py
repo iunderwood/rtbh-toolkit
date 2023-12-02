@@ -701,8 +701,12 @@ def list_processor(db_link, entry):
 
     # Block/Add Progress Bar
     if logging.root.level != logging.DEBUG:
-        print("List: {}".format(entry['ident']))
+        print("List: {} ({})".format(entry['ident'], len(list_dict)))
         progress_bar = tqdm.tqdm(total=len(list_dict), desc=' Block/Add')
+
+    counter_add = 0
+    counter_update = 0
+    counter_delete = 0
 
     # Loop through the active block dictionary.
     for list_item in list_dict:
@@ -758,6 +762,8 @@ def list_processor(db_link, entry):
                                                                                               list_dict[list_item])
                         db_history_add(db_link, entry['ident'], list_item, "UPDATE", history_string)
 
+                        counter_update += 1
+
                 # Remove from the list if the item is now under the low water mark / minimum score.
                 elif float(list_dict[list_item]) < float(score_lwm):
                     log.debug("Address {} score {} is scored below {}.".format(list_item,
@@ -803,6 +809,8 @@ def list_processor(db_link, entry):
             # Add to the blocklist dictionary, so it doesn't get deleted in the next check.
             block_dict.update({list_item: 0})
 
+            counter_add += 1
+
         # Update the progress bar before finishing out the loop.
         if logging.root.level != logging.DEBUG:
             progress_bar.update(1)
@@ -835,6 +843,8 @@ def list_processor(db_link, entry):
             # Remove from the block list.
             db_blocklist_delete(db_link, entry['ident'], block_item)
 
+            counter_delete += 1
+
             # Change the hostlist only if there are no entries in the block list.
             bl_counter = db_blocklist_count(db_link, block_item)
 
@@ -861,6 +871,10 @@ def list_processor(db_link, entry):
 
     # Unlock the database and increment the success counter.
     db_proc_unlock(db_link, entry['ident'], True)
+
+    print(" Add/Del..: {} / {}".format(counter_add, counter_delete))
+    if counter_update > 0:
+        print(" Updates..: {}".format(counter_update))
 
     return
 
