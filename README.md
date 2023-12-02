@@ -6,7 +6,9 @@ Remote Trigger Black Hole Toolkit
 
 This toolkit is a loosely integrated set of Python scripts that are used to manage and maintain a Remote Trigger Black Hole infrastructure.
 
-Detailed documentation is being prepared in ReadTheDocs formatting and structure.
+Detailed documentation can be found in the docs/ code directory, or in a more viaually pleasning format here:
+
+https://rtbh-toolkit.readthedocs.io/en/latest/
 
 ### rtbh-database.py
 

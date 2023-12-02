@@ -6,15 +6,17 @@
 Remote Trigger Black Hole Toolkit Documentation
 ===============================================
 
+This is the documentation for the Remote Trigger Black Hole Toolkit.  Please note the table of contents below and to the right column:
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    install
+   config
+   cron
 
-This is the documentation for the Remote Trigger Black Hole Toolkit.
-
-This is very much in development.
+This document will fill out as we go.
 
 Indices and tables
 ==================

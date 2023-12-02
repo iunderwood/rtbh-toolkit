@@ -22,8 +22,6 @@ extensions = ['sphinx_rtd_theme',
               'sphinxemoji.sphinxemoji',
               ]
 
-
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
