@@ -662,9 +662,6 @@ def list_processor(db_link, entry):
         log.error("Entry {} must contain a url or file identifier.")
         return
 
-    # Set up us the blank dictionary.
-    list_dict = dict()
-
     # Acquire the host list based upon its configured type.
     if 'type' in entry:
         if entry['type'] == 'v4_host':
