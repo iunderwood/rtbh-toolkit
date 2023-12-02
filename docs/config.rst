@@ -94,6 +94,17 @@ This section is in the read-write section only, and contains the router list and
 
 For the routerunner to work properly, there must be a routercreds.yaml file in the executing user's home directory.  This file must be only accessible by the owner, as it contains the credential required to configure the destination runner.
 
+.. code-block:: yaml
+   :caption: routecreds.yaml - in user home directory, permissions 600.
+
+    ---
+    routercred:
+      un: svc-rtbh
+      pw: rtbhServicePW918!
+    ...
+
+This approach was taken for this module because it is the most accessible.
+
 Query Section (Optional)
 ------------------------
 
