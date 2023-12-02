@@ -168,9 +168,8 @@ def op_summary(db_link, last):
     """
     db = db_link.cursor()
 
-    print()
     print("RTBH Query Summary")
-    print("------------------")
+    print("==================")
 
     sql = 'SELECT COUNT(*) from netlist'
     db.execute(sql)
