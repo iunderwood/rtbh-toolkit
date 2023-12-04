@@ -254,13 +254,31 @@ def route_processor(db_link, entry, blocklist):
 
     # Get the routes.
     print("* Acquiring static route list.")
-    try:
-        response = router.get("data/native/ip/route")
-    except requests.exceptions.ChunkedEncodingError as error:
-        log.error("Unable to get the resource: {}".format(error))
-        db_proc_unlock(db_link, entry['ident'], False)
-        return
 
+    # Prepare for the next loop.
+    get_attempts = 0
+    get_success = False
+
+    # Sometimes, getting a very large routing table reports errors.
+    while not get_success:
+        try:
+            response = router.get("data/native/ip/route")
+            get_success = True
+        except requests.exceptions.ChunkedEncodingError as error:
+            log.debug("Unable to get the resource: {}".format(error))
+            log.error("Error w/ route acquisition.")
+            db_proc_unlock(db_link, entry['ident'], False)
+            get_success = False
+            get_attempts += 1
+
+        if get_attempts > 4 and get_success is False:
+            log.error("Giving up on this run.  Try again later.")
+            return
+        elif get_success is False:
+            log.error("Retrying ...")
+            time.sleep(1)
+
+    # Work with what we have managed to retrieve.
     if response.status_code == 204:
         log.debug("The routing table is empty.")
         route_dict = {}
