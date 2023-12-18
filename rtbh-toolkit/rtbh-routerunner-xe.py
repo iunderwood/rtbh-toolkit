@@ -266,7 +266,7 @@ def route_processor(db_link, entry, blocklist):
             get_success = True
         except requests.exceptions.ChunkedEncodingError as error:
             log.debug("Unable to get the resource: {}".format(error))
-            log.error("Error w/ route acquisition.")
+            print("ChunkedEncdingError during retrieval.")
             db_proc_unlock(db_link, entry['ident'], False)
             get_success = False
             get_attempts += 1
@@ -275,7 +275,7 @@ def route_processor(db_link, entry, blocklist):
             log.error("Giving up on this run.  Try again later.")
             return
         elif get_success is False:
-            log.error("Retrying ...")
+            print("Retrying ...")
             time.sleep(1)
 
     # Work with what we have managed to retrieve.
