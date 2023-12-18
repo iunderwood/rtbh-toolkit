@@ -8,7 +8,7 @@ Remote Trigger Black Hole Toolkit Documentation
 
 This is the documentation for the Remote Trigger Black Hole Toolkit.
 
-There are no tutorials for this project.
+A tutorial and walkthrough will be part of the 0.2 release of this project.
 
 .. toctree::
    :maxdepth: 1

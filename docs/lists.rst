@@ -30,6 +30,8 @@ This list uses a specific file which contains a list of networks and bitmasks.  
     # 2021-02-06 - Ticket 31245
     94.147.140.0/23
 
+How the list is updated is up to the administrator.  This can be run via a full CI/CD process, or in a periodic pull from an internal repository.
+
 Free Address Lists
 ------------------
 
