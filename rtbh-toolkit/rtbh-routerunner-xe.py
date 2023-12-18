@@ -314,7 +314,13 @@ def route_processor(db_link, entry, blocklist):
     # One does not simply replace the routing table on a large blocklist collection.
     patched = False
     while not patched:
-        response = router.put("data/native/ip/route", route_dict)
+        try:
+            response = router.put("data/native/ip/route", route_dict)
+        except requests.exceptions.ChunkedEncodingError as error:
+            print("  ChunkedEncodingError.")
+            time.sleep(5)
+            continue
+
         if response.status_code == 204:
             log.debug("Default placement successful!")
             patched = True
