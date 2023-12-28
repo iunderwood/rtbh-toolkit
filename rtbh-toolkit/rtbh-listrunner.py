@@ -19,6 +19,7 @@ import certifi
 import iupy
 import psycopg2
 import tqdm
+import urllib.error
 import urllib.request
 import yaml
 import yaml.scanner
@@ -605,7 +606,13 @@ def get_by_url(entry):
         raw_data = ""
 
         ssl_context = ssl.create_default_context(cafile=certifi.where())
-        url_response = urllib.request.urlopen(entry['url'], context=ssl_context)
+
+        # A URL grab might not be successful.
+        try:
+            url_response = urllib.request.urlopen(entry['url'], context=ssl_context)
+        except urllib.error.HTTPError as error:
+            print("Unable to acquire list: {}".format(error))
+            return
 
         with url_response as r:
             raw_data += r.read().decode()
@@ -660,6 +667,11 @@ def list_processor(db_link, entry):
         raw_content = get_by_file(entry['file'])
     else:
         log.error("Entry {} must contain a url or file identifier.")
+        return
+
+    if raw_content is None:
+        log.error("Content block is empty for this list.")
+        db_proc_unlock(db_link, entry['ident'], False)
         return
 
     # Acquire the host list based upon its configured type.
