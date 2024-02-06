@@ -52,6 +52,10 @@ def cli_args():
                          required=False,
                          action='store',
                          help='This is the password for the read-only account.')
+    op_init.add_argument('--db-name',
+                         required=False,
+                         action='store',
+                         help='This is the name of the database to be created.')
 
     # Database Flush Sub Parser
     op_flush = sub_parser.add_parser('flush',
@@ -302,7 +306,11 @@ if __name__ == "__main__":
         logger.error("FATAL: Configuration element {} missing.".format(error))
         exit(1)
 
-    print("RTBH Database Init")
+    # CLI Overrides
+    if 'db_name' in vars(args):
+        dbName = vars(args)['db_name']
+
+    print("RTBH Database Tool")
     print("==================")
 
     if vars(args)['operation'] == 'init':
