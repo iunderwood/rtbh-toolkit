@@ -39,6 +39,9 @@ def cli_args():
     cli_parser.add_argument('-d', '--debug',
                             action='store_true',
                             help="Enable script debugging.  This is a LOT of output.")
+    cli_parser.add_argument('-n', '--no-progbar',
+                            action='store_true',
+                            help="Turn off progress bar.  Useful for Cron.")
     cli_parser.add_argument('--skip-write',
                             action='store_true',
                             help="Look through the lists and changes, but do not commit to the database.")
@@ -633,7 +636,7 @@ def get_by_url(entry):
     return content
 
 
-def list_processor(db_link, entry):
+def list_processor(db_link, entry, **kwargs):
     """
     This function processes a block list for a given entry.
 
@@ -644,6 +647,18 @@ def list_processor(db_link, entry):
     log = logging.getLogger("rtbh-listrunner/list_processor")
 
     list_notes = ''
+
+    # Progress bar default is enabled.
+    do_progbar = True
+
+    # Turn off progress bar, if disabled by request.
+    if 'skip_progbar' in kwargs:
+        if kwargs['skip_progbar'] is True:
+            do_progbar = False
+
+    # Turn off progress bar, if we are debugging.
+    if logging.root.level == logging.DEBUG:
+        do_progbar = False
 
     #
     # List Readiness
@@ -712,9 +727,9 @@ def list_processor(db_link, entry):
     #
 
     # Block/Add Progress Bar
-    if logging.root.level != logging.DEBUG:
-        print("List: {} ({})".format(entry['ident'], len(list_dict)))
-        progress_bar = tqdm.tqdm(total=len(list_dict), desc=' Block/Add')
+    print("List: {} ({})".format(entry['ident'], len(list_dict)))
+    if do_progbar is True:
+        progress_bar = tqdm.tqdm(total=len(list_dict), desc=' Block/Add.')
 
     counter_add = 0
     counter_update = 0
@@ -744,7 +759,7 @@ def list_processor(db_link, entry):
         # If we have an exclusion, skip to the next entry in the loop
         if exclusion_continue is True:
             log.debug("Address {} found in exclusion subnets.")
-            if logging.root.level != logging.DEBUG:
+            if do_progbar:
                 progress_bar.update(1)
             continue
 
@@ -799,7 +814,7 @@ def list_processor(db_link, entry):
                     log.debug("Address {} score {} is scored below {}.".format(list_item,
                                                                                list_dict[list_item],
                                                                                score_hwm))
-                    if logging.root.level != logging.DEBUG:
+                    if do_progbar is True:
                         progress_bar.update(1)
                     continue
 
@@ -824,11 +839,11 @@ def list_processor(db_link, entry):
             counter_add += 1
 
         # Update the progress bar before finishing out the loop.
-        if logging.root.level != logging.DEBUG:
+        if do_progbar is True:
             progress_bar.update(1)
 
     # Close the progress bar.
-    if logging.root.level != logging.DEBUG:
+    if do_progbar is True:
         progress_bar.close()
 
     #
@@ -838,8 +853,8 @@ def list_processor(db_link, entry):
     log.debug("Running {} Block Loop".format(entry['ident']))
 
     # Cleanup Progress Bar
-    if logging.root.level != logging.DEBUG and len(block_dict) > 0:
-        progress_bar = tqdm.tqdm(total=len(block_dict), desc=' Cleanup  ')
+    if do_progbar is True and len(block_dict) > 0:
+        progress_bar = tqdm.tqdm(total=len(block_dict), desc=' Cleanup...')
 
     # Loop block list against current entries.
     for block_item in block_dict:
@@ -874,19 +889,19 @@ def list_processor(db_link, entry):
             db_history_add(db_link, entry['ident'], block_item, "ADD", history_string)
 
         # Update the progress bar before finishing out the loop.
-        if logging.root.level != logging.DEBUG:
+        if do_progbar:
             progress_bar.update(1)
 
     # Close out the progress bar.
-    if logging.root.level != logging.DEBUG:
+    if do_progbar:
         progress_bar.close()
 
     # Unlock the database and increment the success counter.
     db_proc_unlock(db_link, entry['ident'], True)
 
-    print(" Add/Del..: {} / {}".format(counter_add, counter_delete))
+    print(" Add/Del...: {} / {}".format(counter_add, counter_delete))
     if counter_update > 0:
-        print(" Updates..: {}".format(counter_update))
+        print(" Updates...: {}".format(counter_update))
 
     return
 
@@ -959,10 +974,10 @@ if __name__ == "__main__":
     for entry in config['listrunner']['lists']:
         if list == "ALL" and 'auto' in entry:
             logger.debug("Processing {}".format(entry['ident']))
-            list_processor(db_link, entry)
+            list_processor(db_link, entry, skip_progbar=vars(args)['no_progbar'])
         elif entry['ident'] == list:
             logger.debug("Processing {}".format(entry['ident']))
-            list_processor(db_link, entry)
+            list_processor(db_link, entry, skip_progbar=vars(args)['no_progbar'])
         else:
             logger.debug("Not processing {}".format(entry['ident']))
 
