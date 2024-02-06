@@ -52,4 +52,23 @@ From within the VENV directory, make a new directory which contain the GitHub re
     cd rtbh-toolkit
     pip3 install -r requirements.txt
 
+Database Initializaiton
+-----------------------
 
+In order to initialize the database, a minimal configuration must be built and placed in rtbh-config.yaml.
+
+.. code-block:: yaml
+
+    # Common Database Information
+    database:
+      dbHost: postgres.example.com
+      dbPort: 5432
+      dbName: rtbhdb
+      dbUserName: rtbh_ro
+      dbUserPass: timeToReadMe123!
+
+To install this using the service account, the config file would be placed in /home/rtbhmgr/rtbh-config.yaml.
+
+Initializing the database requires the Postgres superuser credentials which are specified on the command line:
+
+``rtbh-database.py init --db-superuser PGSUPER --db-superpass PGSECRET``
