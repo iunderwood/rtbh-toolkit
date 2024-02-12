@@ -35,6 +35,9 @@ def cli_args():
     cli_parser.add_argument('-d', '--debug',
                             action='store_true',
                             help="Enable script debugging.  This is a LOT of output.")
+    cli_parser.add_argument('-n', '--no-progbar',
+                            action='store_true',
+                            help="Turn off progress bar.  Useful for Cron.")
     cli_parser.add_argument('--router',
                             action='store',
                             default='ALL',
@@ -217,7 +220,7 @@ def restconf_fib_size(router, instance_name):
             return instance['num-pfx']
 
 
-def route_processor(db_link, entry, blocklist):
+def route_processor(db_link, entry, blocklist, **kwargs):
     """
     Process a given black hole router.
 
@@ -236,6 +239,18 @@ def route_processor(db_link, entry, blocklist):
         return
     else:
         db_proc_lock(db_link, entry['ident'])
+
+    # Progress bar default is enabled.
+    do_progbar = True
+
+    # Turn off progress bar, if disabled by request.
+    if 'skip_progbar' in kwargs:
+        if kwargs['skip_progbar'] is True:
+            do_progbar = False
+
+    # Turn off progress bar, if we are debugging.
+    if logging.root.level == logging.DEBUG:
+        do_progbar = False
 
     # Test Access
     router = restconf.RestConf()
@@ -380,7 +395,7 @@ def route_processor(db_link, entry, blocklist):
     batch_counter = 1
     route_counter = 0
 
-    if logging.root.level != logging.DEBUG:
+    if do_progbar:
         print("{} Deployment - Batch Size: {}".format(entry['ident'], config['routerunner']['limits']['patchcount']))
         progress_bar = tqdm.tqdm(total=len(blocklist.items()), desc=' Routes')
 
@@ -436,7 +451,7 @@ def route_processor(db_link, entry, blocklist):
                 log.debug("Wait a second.")
                 time.sleep(1)
 
-        if logging.root.level != logging.DEBUG:
+        if do_progbar:
             progress_bar.update(1)
 
     # Apply the final patch round.
@@ -449,7 +464,7 @@ def route_processor(db_link, entry, blocklist):
     log.debug("Final Route Count: {}".format(route_counter))
 
     # Close the progress bar.
-    if logging.root.level != logging.DEBUG:
+    if do_progbar:
         progress_bar.close()
 
     # pprint.pprint(routes_dict)
@@ -545,10 +560,10 @@ if __name__ == "__main__":
     for entry in config['routerunner']['routers']:
         if router == "ALL" and 'auto' in entry:
             print("Processing {}".format(entry['ident']))
-            route_processor(db_link, entry, blocklist)
+            route_processor(db_link, entry, blocklist, skip_progbar=vars(args)['no_progbar'])
         elif entry['ident'] == router:
             print("Processing {}".format(entry['ident']))
-            route_processor(db_link, entry, blocklist)
+            route_processor(db_link, entry, blocklist, skip_progbar=vars(args)['no_progbar'])
         else:
             print("Not processing {}".format(entry['ident']))
 
