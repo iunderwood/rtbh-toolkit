@@ -212,14 +212,19 @@ def restconf_fib_size(router, instance_name):
     response = router.get('data/Cisco-IOS-XE-fib-oper:fib-oper-data/fib-ni-entry/?fields=num-pfx;num-pfx-fwd;instance-name')
 
     # Process a good response.
-    if 'status_code' in response:
-        if response.status_code == 200:
-            fib_dict = json.loads(response.content)
+    try:
+        if 'status_code' in response:
+            if response.status_code == 200:
+                fib_dict = json.loads(response.content)
+            else:
+                log.debug("Response code: {}".format(response.status_code))
+                return None
         else:
-            log.debug("Response code: {}".format(response.status_code))
+            log.debug("Request failed.  No response code returned.")
             return None
-    else:
-        log.debug("Request failed.  No response code returned.")
+    except TypeError as e:
+        log.error("Problem with response: {}".format(e))
+        pprint.pprint(response)
         return None
 
     for instance in fib_dict['Cisco-IOS-XE-fib-oper:fib-ni-entry']:
