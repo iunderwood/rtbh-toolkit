@@ -355,11 +355,23 @@ def route_processor(db_link, entry, blocklist, **kwargs):
         elif response.status_code == 504:
             print("  Base route state still running.  Please wait.")
             log.debug("Gateway timeout.  This could take awhile.")
-            fib_init = restconf_fib_size(router, "IPv4:Default")
-            fib_last = fib_init
-            log.debug("Initial FIB Size: {}".format(fib_init))
+
+            # Get an initial FIB count.  Account for possible failure.
+            fib_init = None
+            while fib_init is None:
+                fib_init = restconf_fib_size(router, "IPv4:Default")
+
+                if fib_init is not None:
+                    fib_last = fib_init
+                    log.debug("Initial FIB Size: {}".format(fib_init))
+                else:
+                    log.debug("Unable to get a FIB count.  Retry in 5.")
+                    time.sleep(5)
+
+            # 15 Second Pause.
             time.sleep(15)
 
+            # Loop while the FIB is changing out.
             fib_done = False
             while not fib_done:
                 fib_current = restconf_fib_size(router, "IPv4:Default")
@@ -375,7 +387,6 @@ def route_processor(db_link, entry, blocklist, **kwargs):
                         log.debug("Final Count: {}".format(fib_current))
                         fib_done = True
                     fib_last = fib_current
-
                 else:
                     log.debug("Unable to get a FIB count.  Retry in 5.")
                     time.sleep(5)
