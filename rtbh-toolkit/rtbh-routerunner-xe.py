@@ -216,7 +216,7 @@ def restconf_fib_size(router, instance_name):
         return None
 
     # Process a good response.
-    if 'status_code' in response:
+    if response.status_code:
         if response.status_code == 200:
             fib_dict = json.loads(response.content)
         else:
